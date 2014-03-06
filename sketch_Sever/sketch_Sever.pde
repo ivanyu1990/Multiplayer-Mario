@@ -199,7 +199,7 @@ public void draw() {
           }
           //actX, initY + actY, initZ + speedZ + 50
           //
-          if (Math.abs(parseInt(tArray[1]) + 25 - actX) <= 50 && Math.abs(parseInt(tArray[2]) - (initY + actY)) <= 50 && Math.abs((initZ -  100 * 20 + -parseInt(tArray[3]) + 200) - (initZ + speedZ + 50)) <= 50 ) {
+          if (Math.abs(parseInt(tArray[1]) + 25 - actX) <= 50 && Math.abs(parseInt(tArray[2]) - (initY + actY)) <= 80 && Math.abs((initZ -  100 * 20 + -parseInt(tArray[3]) + 200) - (initZ + speedZ + 50)) <= 50 ) {
             hp -= 5;
             println("hello");
             player2.rewind();
@@ -315,6 +315,7 @@ void startOver() {
   startD = 0;
   speedZ = 0;
   startB = 0;
+  hp = 100;
 }
 
 void stop() {

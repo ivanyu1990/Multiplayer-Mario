@@ -48,6 +48,7 @@ public void setup() {
 
 public void draw() {
 
+  textSize(100); 
   background(100);
   String out = "";
   if (c.available() > 0) {
@@ -155,6 +156,7 @@ public void draw() {
     pushMatrix();
     translate(actX, initY + actY, initZ + speedZ + 50);  
 
+    text("HP : " + hp, 0 - actX, 0 - (initY + actY), -2000);
     rotateX(radians(180));
     if (rotation) {
       nY += 0.01;
@@ -203,7 +205,7 @@ public void draw() {
           shader(basicShader); 
           popMatrix();
 
-          if (Math.abs(parseInt(tArray[1]) + 25 - actX) <= 50 && Math.abs(parseInt(tArray[2]) - (initY + actY)) <= 50 && Math.abs((initZ -  100 * 20 + -parseInt(tArray[3]) + 200) - (initZ + speedZ + 50)) <= 50 ) {
+          if (Math.abs(parseInt(tArray[1]) + 25 - actX) <= 50 && Math.abs(parseInt(tArray[2]) - (initY + actY)) <= 80 && Math.abs((initZ -  100 * 20 + -parseInt(tArray[3]) + 200) - (initZ + speedZ + 50)) <= 50 ) {
             hp -= 5;
             println("hello");
             player2.rewind();
@@ -337,6 +339,7 @@ void startOver() {
   startD = 0;
   speedZ = 0;
   startB = 0;
+  hp = 100;
 }
 
 void stop() {
