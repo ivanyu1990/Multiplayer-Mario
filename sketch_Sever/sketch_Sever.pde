@@ -24,6 +24,7 @@ Client c;
 float foreignX, foreignY, foreignZ;
 String [] temp;
 int spacePos = 0;
+int hp = 100;
 
 public void setup() {
   size(640, 800, P3D);
@@ -47,7 +48,7 @@ public void setup() {
 public void draw() {
 
   String out = "";
-  fill(0);
+  //fill(0);
   textSize(100); 
   background(100);
   c = s.available();
@@ -70,9 +71,9 @@ public void draw() {
   //camera(actX + 200, initY - 400, -400, width/2.0 - 2400, height/2.0 + 1300, -900, 0, 1, 0);
   //camera( width/2.0 - 2400, height/2.0 + 1300, -900, initX + 200, initY - 400, -400, 0, 1, 0);
   camera(actX - 200, initY + actY + marioFallDownValueY - 100, initZ +speedZ + 600, width/2.0, height/2.0 + 1300, -90000, 0, 1, 0);
-  //rotateY(+PI * 180);//( - width /2) / width);
+  rotateY(+PI * 180);//( - width /2) / width);
   //println(mouseX);
-  rotateY(+PI * (mouseX - width /2) / width);
+  //rotateY(+PI * (mouseX - width /2) / width);
   endCamera();
 
 
@@ -150,7 +151,7 @@ public void draw() {
     pushMatrix();
     translate(actX, initY + actY, initZ + speedZ + 50);  
 
-    text("ABC", 0 - actX, 0 - (initY + actY), -2000);
+    text("HP : " + hp, 0 - actX, 0 - (initY + actY), -2000);
     rotateX(radians(180));
     if (rotation) {
       nY += 0.01;
@@ -196,6 +197,16 @@ public void draw() {
             ((initZ -  100 * 9 > initZ -  100 * 20 + -parseInt(tArray[3]) + 200 ) && (initZ -  100 * 20 + -parseInt(tArray[3]) + 200  > initZ -  100 * 10) )) {//&& fireball[fbCount].hit == false)) {//&& fireball[fbCount].w - 50 <= initZ -  100 * 10){
             //fireball[fbCount].hit = true;
           }
+          //actX, initY + actY, initZ + speedZ + 50
+          //
+          if (Math.abs(parseInt(tArray[1]) + 25 - actX) <= 50 && Math.abs(parseInt(tArray[2]) - (initY + actY)) <= 50 && Math.abs((initZ -  100 * 20 + -parseInt(tArray[3]) + 200) - (initZ + speedZ + 50)) <= 50 ) {
+            hp -= 5;
+            println("hello");
+            player2.rewind();
+            player2.play();
+          }
+          //println("foreign ball"  + tArray[1] + " " + tArray[2] + " " + (initZ -  100 * 20 + -parseInt(tArray[3]) + 200));
+          //println("mario" + actX + " " + (initY + actY) + " " + (initZ + speedZ + 50));
         } /*else if (tArray[0].contains("f") {
          }*/
         //println(parseInt(tArray[0]) );

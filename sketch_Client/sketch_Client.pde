@@ -25,6 +25,8 @@ String input;
 float foreignX, foreignY, foreignZ;
 int spacePos;
 String []temp;
+int hp = 100;
+
 public void setup() {
   size(640, 800, P3D);
   basicShader = loadShader("basicfrag.glsl", "basicvert.glsl");
@@ -189,19 +191,26 @@ public void draw() {
     while (input != null && spacePos != -1 && input.indexOf ("\n", spacePos + 1) != -1) {
       int former = spacePos;
       spacePos = input.indexOf ("\n", spacePos + 1);
-      println("H " + spacePos + " " + input.substring(former, spacePos));
+      //println("H " + spacePos + " " + input.substring(former, spacePos));
       try {
         String [] tArray = input.substring(former + 1, spacePos).split(" ");
         if (parseInt(tArray[0]) == 2) {
-          println("found");
+          //println("found");
           pushMatrix();
           translate(parseInt(tArray[1]), parseInt(tArray[2]), initZ -  100 * 20 + -parseInt(tArray[3]) + 200);
           translate(-50, -100, - 100);
           sphere(50);
           shader(basicShader); 
           popMatrix();
+
+          if (Math.abs(parseInt(tArray[1]) + 25 - actX) <= 50 && Math.abs(parseInt(tArray[2]) - (initY + actY)) <= 50 && Math.abs((initZ -  100 * 20 + -parseInt(tArray[3]) + 200) - (initZ + speedZ + 50)) <= 50 ) {
+            hp -= 5;
+            println("hello");
+            player2.rewind();
+            player2.play();
+          }
         }
-        println(parseInt(tArray[0]) );
+        //println(parseInt(tArray[0]) );
       } 
       catch (Exception e) {
       }
@@ -240,7 +249,7 @@ public void draw() {
         fireball[fbCount].hit = true;
         player2.rewind();
         player2.play();
-        println(fbCount + "hit1" + (fireball[fbCount].w - 50)+ (initZ -  100 * 9) + (initZ -  100 * 10));
+        //println(fbCount + "hit1" + (fireball[fbCount].w - 50)+ (initZ -  100 * 9) + (initZ -  100 * 10));
         //println(fireball[fbCount].w - 50 + " " + (initZ -  100 * 9));
       }
       if (fireball[fbCount].w  <= initZ -  100 * 10) {
@@ -283,7 +292,8 @@ public void draw() {
           startB = millis();
           //println('f');
         }
-      } else if(keyCode == 'f'){
+      } 
+      else if (keyCode == 'f') {
         out += ("f\n");
       }
     }
