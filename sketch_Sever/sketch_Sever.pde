@@ -49,9 +49,13 @@ int spacePos = 0;
 int hp = 100;
 
 ConcurrentMap<Integer, Vector> fingerPositions;
+ParticleSystem ps;
+float[][] my2d;
+
 public void setup() {
   size(640, 800, P3D);
-  basicShader = loadShader("basicfrag.glsl", "basicvert.glsl");
+  my2d = new float[20][20];
+  basicShader = loadShader("pixlightfrag.glsl", "pixlightvert.glsl");
   actX = width / 2 ;
   initX = 0;
   initY = height - height / 5;
@@ -68,14 +72,21 @@ public void setup() {
   player = minim.loadFile("powerup.mp3", 256);
   player2 = minim.loadFile("blast.wav", 256);
   print("loading done");
+  ps = new ParticleSystem(new PVector(0, 0));
+  for (int x = 0; x < 20; x++) {
+    for (int y = 0; y < 20; y++) {
+      my2d[x][y] = random(0, 10);
+    }
+  }
 }
 
 public void draw() {
   //leapMotion();
+  shader(basicShader); 
   String out = "";
   //fill(0);
   textSize(100); 
-  background(100);
+  background(0);
   c = s.available();
   if (c != null) {
     input = c.readString();
@@ -89,9 +100,8 @@ public void draw() {
     } 
     catch (Exception e) {
     }
-    //lights();
   }
-
+  //lights();
   beginCamera();
   //camera(actX + 200, initY - 400, -400, width/2.0 - 2400, height/2.0 + 1300, -900, 0, 1, 0);
   //camera( width/2.0 - 2400, height/2.0 + 1300, -900, initX + 200, initY - 400, -400, 0, 1, 0);
@@ -103,7 +113,17 @@ public void draw() {
 
 
   //image(background, 0, 0, width, height, 0, 1500, 105, height);
+  //lights();
+  //ambientLight(153, 102, 0);
+  //ambient(51, 26, 0);
 
+  //pointLight(255, 255, 255, width/2, height/1.4, -height/2);
+  //lights();
+  pointLight(255, 255, 255, actX  - 50, height/1.2 -marioFallDownValueY, initZ + speedZ + 50);
+  //  pointLight(255, 255, 255, width/2, height/1.4, -height);
+  //directionalLight(51, 102, 126, 0, -1, 0);
+
+  noStroke();
   boolean stayInBound = false;
   for (int i = 0; i < 20; i++) {
     for (int x = 0; x < 20; x++) {
@@ -112,7 +132,7 @@ public void draw() {
       //translate(initX+ 50 * i, initY+ 25 + i * 0, initZ+-75); 
       translate(initX+ -75 + 100 * x, initY+ 25, initZ -  100 * i); 
       //reason for -75 is the width of mario for checking the falldown....
-      box(100, 50, 100);
+      box(100, 50 + my2d[i][x], 100);
       shader(basicShader); 
       popMatrix();
       if ((actX >= initX + x * 100 - 50 
@@ -172,11 +192,11 @@ public void draw() {
 
     out = 1 + " " + actX+" "+(initY + actY) + " " + (initZ + speedZ) + "\n";
 
-    lights();
+    //lights();
     pushMatrix();
     translate(actX, initY + actY, initZ + speedZ + 50);  
 
-    text("HP : " + hp, 0 - actX, 0 - (initY + actY), -2000);
+    text("HP : " + hp, + 500, 0 - (initY + actY) - 800, -2000);
     rotateX(radians(180));
     if (rotation) {
       nY += 0.01;
@@ -248,9 +268,15 @@ public void draw() {
         //println("fb" +fireball[fbCount].x + " "+ fireball[fbCount].y + " "+ fireball[fbCount].w);
         translate(fireball[fbCount].x, fireball[fbCount].y, fireball[fbCount].w);
         out += 2 + " " + fireball[fbCount].x +" "+ fireball[fbCount].y + " " +  fireball[fbCount].w + "\n";
-
+        ps.addParticle();
+        ps.run();
+        fill(255);
+        //noFill();
         translate(-50, -100, - 100);
+        //ps.location
+        fill(150, 22, 10);
         sphere(50);
+        fill(255);
         shader(basicShader); 
         fireball[fbCount].w -= 50;
         popMatrix();
@@ -464,164 +490,3 @@ void onFrame(final Controller controller)
   }
 }
 
-/*
-void leapMotion() {
- 
- // ...
- int fps = leap.getFrameRate();
- 
- // HANDS
- for (Hand hand : leap.getHands()) {
- 
- hand.draw();
- int     hand_id          = hand.getId();
- PVector hand_position    = hand.getPosition();
- PVector hand_stabilized  = hand.getStabilizedPosition();
- PVector hand_direction   = hand.getDirection();
- PVector hand_dynamics    = hand.getDynamics();
- float   hand_roll        = hand.getRoll();
- float   hand_pitch       = hand.getPitch();
- float   hand_yaw         = hand.getYaw();
- float   hand_time        = hand.getTimeVisible();
- PVector sphere_position  = hand.getSpherePosition();
- float   sphere_radius    = hand.getSphereRadius();
- 
- // FINGERS
- float i =0;
- float avg = 0;
- float avgZ = 0;
- for (Finger finger : hand.getFingers()) {
- 
- // Basics
- finger.draw();
- int     finger_id         = finger.getId();
- PVector finger_position   = finger.getPosition();
- PVector finger_stabilized = finger.getStabilizedPosition();
- PVector finger_velocity   = finger.getVelocity();
- PVector finger_direction  = finger.getDirection();
- float   finger_time       = finger.getTimeVisible();
- //println(i++ + " " + finger_position.x + " " + finger_position.y + " " + finger_position.z);
- i++;
- avg += finger_position.x;
- avgZ += finger_position.z;
- // Touch Emulation
- int     touch_zone        = finger.getTouchZone();
- float   touch_distance    = finger.getTouchDistance();
- 
- switch(touch_zone) {
- case -1: // None
- break;
- case 0: // Hovering
- // println("Hovering (#"+finger_id+"): "+touch_distance);
- break;
- case 1: // Touching
- // println("Touching (#"+finger_id+")");
- break;
- }
- }
- if (i > 1) {
- avgZ = avgZ / i;
- avg = avg / i;
-/*if (avgZ > 40) {
- leapZ = true;
- leapB = false;
- } 
- else {
- leapZ = false;
- leapB = true;
- }
- // x > 350 
- // x < 450 
- // 350 < x < 450
- // 200<avg<250r
- //println(avg);
- if (avg < 350) {//350
- leapL = true;
- leapR = false;
- } 
- else if (avg > 450) {// && avg > 400){
- leapR = true;
- leapL = false;
- } 
- 
- if (avg < 450 && avg > 350) {
- leapL = false;
- leapR = false;
- }
- }
- // TOOLS
- for (Tool tool : hand.getTools()) {
- 
- // Basics
- tool.draw();
- int     tool_id           = tool.getId();
- PVector tool_position     = tool.getPosition();
- PVector tool_stabilized   = tool.getStabilizedPosition();
- PVector tool_velocity     = tool.getVelocity();
- PVector tool_direction    = tool.getDirection();
- float   tool_time         = tool.getTimeVisible();
- 
- // Touch Emulation
- int     touch_zone        = tool.getTouchZone();
- float   touch_distance    = tool.getTouchDistance();
- 
- switch(touch_zone) {
- case -1: // None
- break;
- case 0: // Hovering
- // println("Hovering (#"+tool_id+"): "+touch_distance);
- break;
- case 1: // Touching
- // println("Touching (#"+tool_id+")");
- break;
- }
- }
- }
- 
- // DEVICES
- // for(Device device : leap.getDevices()){
- //   float device_horizontal_view_angle = device.getHorizontalViewAngle();
- //   float device_verical_view_angle = device.getVerticalViewAngle();
- //   float device_range = device.getRange();
- // }
- }
- 
- void leapOnCircleGesture(CircleGesture g, int state) {
- int       id               = g.getId();
- Finger    finger           = g.getFinger();
- PVector   position_center  = g.getCenter();
- float     radius           = g.getRadius();
- float     progress         = g.getProgress();
- long      duration         = g.getDuration();
- float     duration_seconds = g.getDurationInSeconds();
- 
- switch(state) {
- case 1: // Start
- break;
- case 2: // Update
- break;
- case 3: // Stop
- //println("SwipeGesture: "+id);
- 
- //position.sub(direction);
- //println("SwipeGesture: "+id + "[" + (position).x + "]");
- break;
- }
- }
- 
- void leapOnScreenTapGesture(KeyTapGesture g) {
- int       id               = g.getId();
- Finger    finger           = g.getFinger();
- PVector   position         = g.getPosition();
- PVector   direction        = g.getDirection();
- long      duration         = g.getDuration();
- float     duration_seconds = g.getDurationInSeconds();
- 
- player.rewind();
- player.play();
- fireball[count] = new Fireball(actX - 50, initY + actY + marioFallDownValueY + 50, initZ + speedZ);
- count++;
- //position.sub(direction);
- println("KeyTapGesture: "+id);// + "[" + (position).x + "]");
- }
- */
