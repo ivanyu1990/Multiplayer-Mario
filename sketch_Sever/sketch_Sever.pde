@@ -119,7 +119,7 @@ public void draw() {
 
   //pointLight(255, 255, 255, width/2, height/1.4, -height/2);
   //lights();
-  pointLight(255, 255, 255, actX  - 50, height/1.2 -marioFallDownValueY, initZ + speedZ + 50);
+  pointLight(255, 255, 255, actX  - 50, 0 -marioFallDownValueY, initZ + speedZ + 50);
   //  pointLight(255, 255, 255, width/2, height/1.4, -height);
   //directionalLight(51, 102, 126, 0, -1, 0);
 
