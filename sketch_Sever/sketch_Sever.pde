@@ -53,7 +53,7 @@ ParticleSystem ps;
 float[][] my2d;
 
 public void setup() {
-  size(640, 800, P3D);
+  size(1440, 800, P3D);
   my2d = new float[20][20];
   basicShader = loadShader("pixlightfrag.glsl", "pixlightvert.glsl");
   actX = width / 2 ;
@@ -100,7 +100,7 @@ public void draw() {
     } 
     catch (Exception e) {
     }
-  }
+  } 
   //lights();
   beginCamera();
   //camera(actX + 200, initY - 400, -400, width/2.0 - 2400, height/2.0 + 1300, -900, 0, 1, 0);
@@ -119,7 +119,7 @@ public void draw() {
 
   //pointLight(255, 255, 255, width/2, height/1.4, -height/2);
   //lights();
-  pointLight(255, 255, 255, actX  - 50, 0 -marioFallDownValueY, initZ + speedZ + 50);
+  pointLight(255, 255, 255, actX  - 50, height/1.3 -marioFallDownValueY, initZ + speedZ + 100);
   //  pointLight(255, 255, 255, width/2, height/1.4, -height);
   //directionalLight(51, 102, 126, 0, -1, 0);
 
