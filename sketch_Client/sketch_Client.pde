@@ -28,7 +28,7 @@ String []temp;
 int hp = 100;
 
 public void setup() {
-  size(640, 800, P3D);
+  size(720, 800, P3D);
   basicShader = loadShader("basicfrag.glsl", "basicvert.glsl");
   actX = width / 2 ;
   initX = 0;
@@ -155,8 +155,11 @@ public void draw() {
     lights();
     pushMatrix();
     translate(actX, initY + actY, initZ + speedZ + 50);  
-
+  
     text("HP : " + hp, 0 - actX, 0 - (initY + actY), -2000);
+    if(hp >= 0){
+      gameOver = false;
+    }
     rotateX(radians(180));
     if (rotation) {
       nY += 0.01;
@@ -299,6 +302,27 @@ public void draw() {
         out += ("f\n");
       }
     }
+  } else {
+    
+    pushMatrix();
+    translate(actX, initY + actY, initZ + speedZ + 50);  
+  
+    text("GameOver" , 0 - actX, 0 - (initY + actY), -2000);
+    if(hp >= 0){
+      gameOver = true;
+    }
+    rotateX(radians(180));
+    if (rotation) {
+      nY += 0.01;
+    }
+    rotateY(nY);
+    //rotateY(radians(90));
+    shape(marioObj);
+    //translate(-75, +50, fbCount);
+    //fbCount+=10;
+    //println(fbCount);
+    //sphere(50);
+    popMatrix();
   }
   c.write(out);
 }

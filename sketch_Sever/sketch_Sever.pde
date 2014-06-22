@@ -35,6 +35,7 @@ float actX, actY, speedZ;
 float nY;//rotation angle
 int marioFallDownValueY = 0;
 Fireball [] fireball = new Fireball[100000];
+Fireball [] fireball2 = new Fireball[100000];
 int count = 0;
 boolean lock = false;
 String input;
@@ -53,7 +54,7 @@ ParticleSystem ps;
 float[][] my2d;
 
 public void setup() {
-  size(1440, 800, P3D);
+  size(720, 800, P3D);
   my2d = new float[20][20];
   basicShader = loadShader("pixlightfrag.glsl", "pixlightvert.glsl");
   actX = width / 2 ;
@@ -75,7 +76,7 @@ public void setup() {
   ps = new ParticleSystem(new PVector(0, 0));
   for (int x = 0; x < 20; x++) {
     for (int y = 0; y < 20; y++) {
-      my2d[x][y] = random(0, 10);
+      my2d[x][y] = random(0, 30);
     }
   }
 }
@@ -86,29 +87,24 @@ public void draw() {
   String out = "";
   //fill(0);
   textSize(100); 
-  background(0);
+  background(200, 200, 200);
   c = s.available();
   if (c != null) {
     input = c.readString();
     //println(input);
     try {
-      //if (input.length() > 0) {
-      //input = input.substring(0, input.indexOf("\n"));
       spacePos = input.indexOf("\n");
       temp = input.substring(0, spacePos).split(" ");
-      //}
     } 
     catch (Exception e) {
     }
   } 
   //lights();
-  beginCamera();
-  //camera(actX + 200, initY - 400, -400, width/2.0 - 2400, height/2.0 + 1300, -900, 0, 1, 0);
-  //camera( width/2.0 - 2400, height/2.0 + 1300, -900, initX + 200, initY - 400, -400, 0, 1, 0);
+ beginCamera();
   camera(actX - 200, initY + actY + marioFallDownValueY - 100, initZ +speedZ + 600, width/2.0, height/2.0 + 1300, -90000, 0, 1, 0);
-  rotateY(+PI * 180);//( - width /2) / width);
-  //println(mouseX);
-  //rotateY(+PI * (mouseX - width /2) / width);
+  rotateY(nY);
+  println(width/2.0);
+  println("'"+degrees(nY) % 360 +"'");
   endCamera();
 
 
@@ -119,7 +115,7 @@ public void draw() {
 
   //pointLight(255, 255, 255, width/2, height/1.4, -height/2);
   //lights();
-  pointLight(255, 255, 255, actX  - 50, height/1.3 -marioFallDownValueY, initZ + speedZ + 100);
+  pointLight(255, 255, 255, actX  - 50, height/1.5 -marioFallDownValueY, initZ + speedZ + 100);
   //  pointLight(255, 255, 255, width/2, height/1.4, -height);
   //directionalLight(51, 102, 126, 0, -1, 0);
 
@@ -195,8 +191,9 @@ public void draw() {
     //lights();
     pushMatrix();
     translate(actX, initY + actY, initZ + speedZ + 50);  
-
+    fill(9);
     text("HP : " + hp, + 500, 0 - (initY + actY) - 800, -2000);
+    fill(255);
     rotateX(radians(180));
     if (rotation) {
       nY += 0.01;
@@ -224,19 +221,21 @@ public void draw() {
       }
     }
 
+    int cnt = 0;
     while (input != null && spacePos != -1 && input.indexOf ("\n", spacePos + 1) != -1) {
       int former = spacePos;
       spacePos = input.indexOf ("\n", spacePos + 1);
       //println("H " + spacePos + " " + input.substring(former, spacePos));
       try {
         String [] tArray = input.substring(former + 1, spacePos).split(" ");
-        if (parseInt(tArray[0]) == 2) {
-          //println("found");
+        if (parseInt(tArray[0]) == 2 && tArray.length >= 4) {
+          println(tArray[0] + " " + tArray[1] + " " + tArray[2] + " " + tArray[3]);
           pushMatrix();
+          fireball2[cnt++] = new Fireball(parseInt(tArray[1]), parseInt(tArray[2]), initZ -  100 * 20 + -parseInt(tArray[3]) + 200);
           translate(parseInt(tArray[1]), parseInt(tArray[2]), initZ -  100 * 20 + -parseInt(tArray[3]) + 200);
           translate(-50, -100, - 100);
           sphere(50);
-          shader(basicShader); 
+          //shader(basicShader); 
           popMatrix();
           if ((parseInt(tArray[1]) - 125 > initX+ -75 + 100 * 9 - 300 &&  parseInt(tArray[1]) + 75 < initX+ -75 + 100 * 9 + 300) && (parseInt(tArray[2]) - 50 > initY -50 ) &&
             ((initZ -  100 * 9 > initZ -  100 * 20 + -parseInt(tArray[3]) + 200 ) && (initZ -  100 * 20 + -parseInt(tArray[3]) + 200  > initZ -  100 * 10) )) {//&& fireball[fbCount].hit == false)) {//&& fireball[fbCount].w - 50 <= initZ -  100 * 10){
@@ -252,11 +251,22 @@ public void draw() {
           }
           //println("foreign ball"  + tArray[1] + " " + tArray[2] + " " + (initZ -  100 * 20 + -parseInt(tArray[3]) + 200));
           //println("mario" + actX + " " + (initY + actY) + " " + (initZ + speedZ + 50));
+        }else {
+          println("!");
         } /*else if (tArray[0].contains("f") {
          }*/
         //println(parseInt(tArray[0]) );
       } 
       catch (Exception e) {
+        println("!");
+        pushMatrix();
+        //fireball2[cnt++] = new Fireball(parseInt(tArray[1]), parseInt(tArray[2]), initZ -  100 * 20 + -parseInt(tArray[3]) + 200);
+        translate(fireball2[cnt].x, fireball2[cnt].y, fireball2[cnt].w);
+        translate(-50, -100, - 100);
+        sphere(50);
+        cnt++;
+        //shader(basicShader); 
+        popMatrix();
       }
     }
 
@@ -406,7 +416,7 @@ void onFrame(final Controller controller)
     avgZ += finger.tipPosition().get(2);
   }
 
-  println(avgZ);
+  //println(avgZ);
   if (avgZ < - 10) {
     leapZ = true;
     leapB = false;
@@ -457,7 +467,6 @@ void onFrame(final Controller controller)
   {
     if ("TYPE_CIRCLE".equals(gesture.type().toString()) && "STATE_START".equals(gesture.state().toString())) {
       //plate.trigger();
-
       player.rewind();
       player.play();
       fireball[count] = new Fireball(actX - 50, initY + actY + marioFallDownValueY + 50, initZ + speedZ);
